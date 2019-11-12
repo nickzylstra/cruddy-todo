@@ -23,10 +23,20 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+  fs.readdir(exports.dataDir, (err, files) => {
+    if (err) {
+      throw new Error('Cannot readAll');
+    }
+    const updatedFiles = _.map(files, (file) => {
+      const name = path.basename(file, '.txt');
+      return {
+        id: name,
+        text: name,
+      };
+    });
+    callback(null, updatedFiles);
+    return updatedFiles;
   });
-  callback(null, data);
 };
 
 exports.readOne = (id, callback) => {
