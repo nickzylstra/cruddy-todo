@@ -63,8 +63,7 @@ exports.update = (id, text, callback) => {
       return new Error('Todo does not exist');
     }
 
-    console.log(fd);
-    console.log(fileName);  
+
     fs.writeFile(fileName, text, (err) => {
       if (err) {
         callback(err);
@@ -79,14 +78,22 @@ exports.update = (id, text, callback) => {
 };
 
 exports.delete = (id, callback) => {
-  var item = items[id];
-  delete items[id];
-  if (!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback();
-  }
+  const fileName = path.join(exports.dataDir, `${id}.txt`);
+  fs.unlink(fileName, (err) => {
+    if (err) {
+      callback(err);
+      return new Error('Failed to delete todo');
+    }
+    callback(null);
+  });
+  // var item = items[id];
+  // delete items[id];
+  // if (!item) {
+  //   // report an error if item not found
+  //   callback(new Error(`No item with id: ${id}`));
+  // } else {
+  //   callback();
+  // }
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
