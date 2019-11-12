@@ -12,7 +12,7 @@ exports.create = (text, callback) => {
     const fileName = path.join(exports.dataDir, `${counterString}.txt`);
     fs.writeFile(fileName, text, (err) => {
       if (err) {
-        throw new Error('Failed to create Todo file.');
+        return new Error('Failed to create Todo file.');
       }
       callback(null, {
         id: counterString,
@@ -25,7 +25,7 @@ exports.create = (text, callback) => {
 exports.readAll = (callback) => {
   fs.readdir(exports.dataDir, (err, files) => {
     if (err) {
-      throw new Error('Cannot readAll');
+      return new Error('Cannot readAll');
     }
     const updatedFiles = _.map(files, (file) => {
       const name = path.basename(file, '.txt');
@@ -40,12 +40,19 @@ exports.readAll = (callback) => {
 };
 
 exports.readOne = (id, callback) => {
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  const fileName = path.join(exports.dataDir, `${id}.txt`);
+  fs.readFile(fileName, 'utf8', (err, todoText) => {
+    if (err) {
+      callback(err);
+      return new Error('Could not readOne');
+    }
+    const todo = {
+      id,
+      text: todoText,
+    };
+    callback(null, todo);
+    return todo;
+  });
 };
 
 exports.update = (id, text, callback) => {
