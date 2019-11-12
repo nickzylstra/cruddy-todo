@@ -8,9 +8,18 @@ var items = {};
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
 exports.create = (text, callback) => {
-  var id = counter.getNextUniqueId();
-  items[id] = text;
-  callback(null, { id, text });
+  counter.getNextUniqueId((err, counterString) => {
+    const fileName = path.join(exports.dataDir, `${counterString}.txt`);
+    fs.writeFile(fileName, text, (err) => {
+      if (err) {
+        throw new Error('Failed to create Todo file.');
+      }
+      callback(null, {
+        id: counterString,
+        text: text
+      });
+    });
+  });
 };
 
 exports.readAll = (callback) => {
