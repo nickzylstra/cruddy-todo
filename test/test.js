@@ -133,7 +133,21 @@ describe('todos', () => {
 
   });
 
+  describe('readAll nick and dan', () => {
+    beforeEach(() => todos.dataDir = path.join(__dirname, 'turtles'));
+    afterEach(() => todos.dataDir = path.join(__dirname, 'testData'));
+
+    it('should return an error when datadir does not exist', (done) => {
+      todos.dataDir = path.join(__dirname, 'turtles');
+      todos.readAll((err, todoList) => {
+        expect(err).to.not.be.null;
+        done();
+      });
+    });
+  });
+
   describe('readOne', () => {
+
     it('should return an error for non-existant todo', (done) => {
       todos.readOne('notAnId', (err, todo) => {
         expect(err).to.exist;

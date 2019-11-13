@@ -28,44 +28,26 @@ exports.readAll = (callback) => {
   fs.readdirAsync(exports.dataDir)
     .then((files) => {
       // console.log(files);
-      return Promise.all(files.map((file) => {
+      const data = files.map((file) => {
         const filepath = path.join(exports.dataDir, file);
-        return fs.readFileAsync(filepath, 'utf8');
-      }))
-        .then((filesContents) => {
-          const updatedFiles = files.map((file, idx) => {
-            const name = path.basename(file, '.txt');
-            return {
-              id: name,
-              text: filesContents[idx],
-            };
-          });
-          callback(null, updatedFiles);
-          return updatedFiles;
-        })
-        .catch((err) => {
-          // console.log(err);
-          callback(err);
+        return fs.readFileAsync(filepath, 'utf8').then((todo) => {
+          const name = path.basename(file, '.txt');
+          return {
+            id: name,
+            text: todo,
+          };
+        });
+      });
+      return Promise.all(data)
+        .then((fileDatas) => {
+          callback(null, fileDatas);
+          return fileDatas;
         });
     })
     .catch((err) => {
+      // console.log(err);
       callback(err);
     });
-
-  // fs.readdir(exports.dataDir, (err, files) => {
-  //   if (err) {
-  //     return new Error('Cannot readAll');
-  //   }
-  //   const updatedFiles = _.map(files, (file) => {
-  //     const name = path.basename(file, '.txt');
-  //     return {
-  //       id: name,
-  //       text: name,
-  //     };
-  //   });
-  //   callback(null, updatedFiles);
-  //   return updatedFiles;
-  // });
 };
 
 exports.readOne = (id, callback) => {
